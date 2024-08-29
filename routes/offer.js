@@ -160,6 +160,12 @@ router.get("/offers", async (req, res) => {
 
 router.get("/offers/:id", async (req, res) => {
   try {
+    const offer = await Offer.findById(req.params.id).populate({
+      path: "owner",
+      select: "account",
+    });
+
+    res.json(offer);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
