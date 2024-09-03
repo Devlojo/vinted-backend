@@ -7,7 +7,7 @@ const router = express.Router();
 
 const Offer = require("../models/Offer");
 const User = require("../models/User");
-
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const convertToBase64 = (file) => {
   return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
 };
@@ -96,6 +96,23 @@ router.post(
   }
 );
 
+router.post("payment/", async (req, res) => {
+  try {
+    // On crée une intention de paiement
+    const paymentIntent = await stripe.paymentIntents.create({
+      // Montant de la transaction
+      amount: req.body.amount,
+      // Devise de la transaction
+      currency: req.body.currency,
+      // Description du produit
+      description: req.body.description,
+    });
+    // On renvoie les informations de l'intention de paiement au client
+    res.json(paymentIntent);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
 router.get("/offers", async (req, res) => {
   try {
     const { title, priceMin, priceMax, sort, page } = req.query;
@@ -164,4 +181,5 @@ router.get("/offers/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 module.exports = router;

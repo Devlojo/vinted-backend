@@ -4,11 +4,13 @@ const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 
 const cors = require("cors");
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONGODB_URI);
+//mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI2); // BDD LOCAL
 // Données qui vont servir a se connecter a l'api de cloudinary :
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -28,6 +30,6 @@ app.all("*", (req, res) => {
   res.status(404).json({ message: "This route does not exists" });
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 8000, () => {
   console.log("Server started");
 });
