@@ -20,7 +20,7 @@ router.post(
   async (req, res) => {
     try {
       // on vérifie si le parametre de files est vide dans le body form-data
-      if (req.files === null || req.files.picture.length === 0) {
+      if (!req.files || !req.files.picture) {
         res.send("No file uploaded!");
         return;
       }
@@ -74,6 +74,7 @@ router.post(
         },
       });
 
+      console.log(newOffer);
       await newOffer.save();
       res.status(201).json({
         _id: newOffer._id,
