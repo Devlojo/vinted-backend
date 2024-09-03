@@ -29,39 +29,27 @@ router.post(
         req.body;
 
       const arrayOfFilesUrl = [];
-
-      const pictureConverted = req.files.picture;
-
-      // Si pictureConverted est un tableau
-      /*if (Array.isArray(pictureConverted)) {
-        for (let i = 0; i < pictureConverted.length; i++) {
-          const picture = pictureConverted[i];
-          const result = await cloudinary.uploader.upload(
-            convertToBase64(picture)
-          );
-          // on ajoute dans le tableau vide l'objet retourné par cloudinary et on affiche la clé secure_url
-          arrayOfFilesUrl.push(result.secure_url);
-        }
-        product_image = arrayOfFilesUrl[0];
-        const avatar = arrayOfFilesUrl[1];
-      } */
-      // Si pictureConverted n'est pas un tableau
-      const result = await cloudinary.uploader.upload(
-        convertToBase64(pictureConverted)
-      );
-
-      arrayOfFilesUrl.push(result.secure_url);
-      product_image = arrayOfFilesUrl[0];
+      //const pictureConverted = req.files.picture;
+      /*for (let i = 0; i < pictureConverted.length; i++) {
+        const picture = pictureConverted[i];
+        const result = await cloudinary.uploader.upload(
+          convertToBase64(picture)
+        );
+        // on ajoute dans le tableau vide l'objet retourné par cloudinary et on affiche la clé secure_url
+        arrayOfFilesUrl.push(result.secure_url);
+      }*/
+      //product_image = arrayOfFilesUrl[0];
 
       //console.log(arrayOfFilesUrl); // Affichera les deux liens vers les images dans un tableau
 
       //convertis les photos en format base 64 pour donner par exemple : data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAACKCAYAAADi+rf7AAAK22lDQ1BJQ0MgUHJvZmlsZQAASImVlwdUk1kWgN//pzdKEhCQEmoognQCSAmhhd6bqIQkkFBiDAQUOzI4gmNBRQTUARVFFBwdARkLYsE2KDbsE2RQU
       //!\\ si il y a une seule photo a envoyer a l'API
-      //const pictureConverted = convertToBase64(req.files.picture);
+      const pictureConverted = convertToBase64(req.files.picture);
 
       // pour supprimer une image, mettre en parametre le public_id de l'image trouvable sur cloudinary
       //const deletePicFromCloudinary = await cloudinary.uploader.destroy();
-      //const result = await cloudinary.uploader.upload(pictureConverted);
+      const result = await cloudinary.uploader.upload(pictureConverted);
+      const product_image = result.secure_url;
 
       const newOffer = new Offer({
         product_name: title,
@@ -98,9 +86,6 @@ router.post(
         owner: {
           account: {
             username: req.user.account.username,
-            avatar: {
-              secure_url: avatar,
-            },
           },
           _id: req.user._id,
         },
@@ -158,8 +143,6 @@ router.get("/offers", async (req, res) => {
       .sort(sortFilters)
       .limit(limit)
       .skip((pageNumber - 1) * limit);
-
-    console.log(offers);
 
     res.json(offers);
   } catch (error) {
