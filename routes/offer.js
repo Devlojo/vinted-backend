@@ -25,24 +25,33 @@ router.post(
         return;
       }
 
-      console.log(req.user.account);
       const { title, description, price, brand, size, city, condition, color } =
         req.body;
 
       const arrayOfFilesUrl = [];
 
-      const picturesConverted = req.files.picture;
-      for (let i = 0; i < picturesConverted.length; i++) {
-        const picture = picturesConverted[i];
-        const result = await cloudinary.uploader.upload(
-          convertToBase64(picture)
-        );
-        // on ajoute dans le tableau vide l'objet retourné par cloudinary et on affiche la clé secure_url
-        arrayOfFilesUrl.push(result.secure_url);
-      }
+      const pictureConverted = req.files.picture;
 
-      const product_image = arrayOfFilesUrl[0];
-      const avatar = arrayOfFilesUrl[1];
+      // Si pictureConverted est un tableau
+      /*if (Array.isArray(pictureConverted)) {
+        for (let i = 0; i < pictureConverted.length; i++) {
+          const picture = pictureConverted[i];
+          const result = await cloudinary.uploader.upload(
+            convertToBase64(picture)
+          );
+          // on ajoute dans le tableau vide l'objet retourné par cloudinary et on affiche la clé secure_url
+          arrayOfFilesUrl.push(result.secure_url);
+        }
+        product_image = arrayOfFilesUrl[0];
+        const avatar = arrayOfFilesUrl[1];
+      } */
+      // Si pictureConverted n'est pas un tableau
+      const result = await cloudinary.uploader.upload(
+        convertToBase64(pictureConverted)
+      );
+
+      arrayOfFilesUrl.push(result.secure_url);
+      product_image = arrayOfFilesUrl[0];
 
       //console.log(arrayOfFilesUrl); // Affichera les deux liens vers les images dans un tableau
 
@@ -134,7 +143,7 @@ router.get("/offers", async (req, res) => {
     }
 
     let pageNumber = 1;
-    const limit = 2; //nombre d'annonce que je vais afficher par page
+    const limit = 10; //nombre d'annonce que je vais afficher par page
 
     if (page) {
       pageNumber = page;
